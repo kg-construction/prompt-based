@@ -1,48 +1,28 @@
-from flask import Flask, jsonify, request
+import os
 
-from .prompt_loader import load_prompt
+from flask import Flask
+from dotenv import load_dotenv
 
-app = Flask(__name__)
+from .application.services import KnowledgeGraphService
+from .controllers.analyze_controller import create_analyze_blueprint
+from .infrastructure.prompt_repository import PromptRepository
 
 DEFAULT_PROMPT = "knowledge_graph_prompt.txt"
 
 
-@app.route("/health", methods=["GET"])
-def health() -> tuple:
-    return jsonify({"status": "ok"}), 200
+def create_app() -> Flask:
+    load_dotenv()
 
+    app = Flask(__name__)
 
-@app.route("/analyze", methods=["POST"])
-def analyze() -> tuple:
-    data = request.get_json(silent=True) or {}
-    text = data.get("text")
-    if not text:
-        return jsonify({"error": "Field 'text' is required."}), 400
+    env_default_prompt = os.getenv("prompt", DEFAULT_PROMPT)
+    prompt_repository = PromptRepository()
+    env_default_prompt = os.getenv("DEFAULT_PROMPT_NAME", DEFAULT_PROMPT)
+    service = KnowledgeGraphService(prompt_repository, default_prompt=env_default_prompt)
+    app.register_blueprint(create_analyze_blueprint(service))
 
-    prompt_name = data.get("prompt_name", DEFAULT_PROMPT)
-
-    try:
-        prompt_text = load_prompt(prompt_name)
-    except FileNotFoundError:
-        return jsonify({"error": f"Prompt '{prompt_name}' not found."}), 404
-    except ValueError as exc:
-        return jsonify({"error": str(exc)}), 400
-
-    # This is where you would call your LLM client. For now we echo the payload.
-    payload_for_model = f"{prompt_text}\n\nUser: {text}\nAssistant:"
-
-    return (
-        jsonify(
-            {
-                "prompt_name": prompt_name,
-                "prompt": prompt_text,
-                "input_text": text,
-                "message_for_model": payload_for_model,
-            }
-        ),
-        200,
-    )
+    return app
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    create_app().run(host="127.0.0.1", port=5000, debug=True)
