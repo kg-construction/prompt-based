@@ -90,6 +90,10 @@ def test_analyze_request_flow(client):
     assert "Integration text" in capture["payload"]["prompt"]
 
     assert csv_path.exists()
+    rows = csv_path.read_text(encoding="utf-8").splitlines()
+    header, first = rows[0], rows[1]
+    assert "rdf_valid" in header
+    assert "False" in first
 
 
 def test_analyze_placeholder_is_replaced(ollama_mock, monkeypatch: pytest.MonkeyPatch, tmp_path: Path):

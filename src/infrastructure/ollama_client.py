@@ -31,6 +31,13 @@ def _float_from_env(name: str) -> float | None:
         return None
 
 
+def _is_likely_turtle(text: str) -> bool:
+    """Lightweight heuristic to flag RDF/Turtle-like responses."""
+    if not text or not isinstance(text, str):
+        return False
+    return "@prefix" in text and (";" in text or "." in text)
+
+
 @dataclass(frozen=True)
 class OllamaOptions:
     seed: int | None = None
@@ -151,8 +158,13 @@ class OllamaClient:
             "eval_count",
             "eval_duration",
             "logprobs",
+            "rdf_valid",
+            "rdf_note",
         ]
         write_header = not csv_path.exists()
+        response_text = data.get("response")
+        rdf_valid = _is_likely_turtle(response_text)
+        rdf_note = "" if rdf_valid else "Response not recognized as RDF/Turtle."
         with csv_path.open("a", encoding="utf-8", newline="") as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
             if write_header:
@@ -174,5 +186,7 @@ class OllamaClient:
                     "eval_count": data.get("eval_count"),
                     "eval_duration": data.get("eval_duration"),
                     "logprobs": json.dumps(data.get("logprobs")),
+                    "rdf_valid": rdf_valid,
+                    "rdf_note": rdf_note,
                 }
             )

@@ -72,3 +72,5 @@ def test_generate_sends_payload_and_logs_csv(monkeypatch, tmp_path: Path):
     assert rows[0]["model"] == "llama3:8b"
     assert rows[0]["response"] == "Generated KG"
     assert json.loads(rows[0]["logprobs"])[0]["token"] == "A"
+    assert rows[0]["rdf_valid"] == "False"
+    assert rows[0]["rdf_note"] == "Response not recognized as RDF/Turtle."
