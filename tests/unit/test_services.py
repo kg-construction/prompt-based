@@ -18,8 +18,8 @@ class DummyPromptRepo(PromptRepository):
 
 def test_analyze_builds_payload():
     repo = DummyPromptRepo(prompt_text="Example Prompt")
-    service = KnowledgeGraphService(repo, default_prompt="example.txt")
-    request = AnalyzeRequest(text="Hello world", prompt_name="example.txt")
+    service = KnowledgeGraphService(repo, default_prompt="example.txt", default_system_prompt="system.txt")
+    request = AnalyzeRequest(text="Hello world", prompt_name="example.txt", system_prompt_name="system.txt")
 
     response = service.analyze(request)
 
@@ -30,17 +30,10 @@ def test_analyze_builds_payload():
     assert response.message_for_model.startswith("Example Prompt")
 
 
-def test_default_prompt_exposed():
-    repo = DummyPromptRepo(prompt_text="Prompt")
-    service = KnowledgeGraphService(repo, default_prompt="default.txt")
-
-    assert service.get_default_prompt() == "default.txt"
-
-
 def test_analyze_replaces_placeholder():
     repo = DummyPromptRepo(prompt_text="Prompt with ${USER_TEXT} inside")
-    service = KnowledgeGraphService(repo, default_prompt="example.txt")
-    request = AnalyzeRequest(text="Hello", prompt_name="example.txt")
+    service = KnowledgeGraphService(repo, default_prompt="example.txt", default_system_prompt="system.txt")
+    request = AnalyzeRequest(text="Hello", prompt_name="example.txt", system_prompt_name="system.txt")
 
     response = service.analyze(request)
 

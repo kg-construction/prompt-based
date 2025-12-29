@@ -1,13 +1,11 @@
 import os
 
-from flask import Flask
 from dotenv import load_dotenv
+from flask import Flask
 
 from .application.services import KnowledgeGraphService
 from .controllers.analyze_controller import create_analyze_blueprint
-from .infrastructure.prompt_repository import PromptRepository
-
-DEFAULT_PROMPT = "knowledge_graph_prompt.txt"
+from .infrastructure import OllamaClient, OllamaClientConfig, PromptRepository
 
 
 def create_app() -> Flask:
@@ -15,10 +13,19 @@ def create_app() -> Flask:
 
     app = Flask(__name__)
 
-    env_default_prompt = os.getenv("prompt", DEFAULT_PROMPT)
     prompt_repository = PromptRepository()
-    env_default_prompt = os.getenv("DEFAULT_PROMPT_NAME", DEFAULT_PROMPT)
-    service = KnowledgeGraphService(prompt_repository, default_prompt=env_default_prompt)
+    env_default_prompt = os.getenv("DEFAULT_PROMPT_NAME")
+    env_default_system_prompt = os.getenv("DEFAULT_SYSTEM_PROMPT_NAME")
+
+    ollama_config = OllamaClientConfig.from_env()
+    ollama_client = OllamaClient(config=ollama_config)
+
+    service = KnowledgeGraphService(
+        prompt_repository,
+        default_prompt=env_default_prompt,
+        default_system_prompt=env_default_system_prompt,
+        ollama_client=ollama_client,
+    )
     app.register_blueprint(create_analyze_blueprint(service))
 
     return app

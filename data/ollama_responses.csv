@@ -1,0 +1,19 @@
+prompt_name,input_text,model,created_at,response,thinking,done,done_reason,total_duration,load_duration,prompt_eval_count,prompt_eval_duration,eval_count,eval_duration,logprobs
+knowledge_graph_prompt.txt,Add your name in the body,llama3:8b,2025-12-29T00:31:36.8164229Z,"Please provide the passage you'd like me to work with. I'll extract key entities and build a knowledge graph, returning RDF in compact Turtle syntax.
+
+Prefixes:
+@prefix ex: <http://example.org/kg/> .
+@prefix schema: <http://schema.org/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+Please go ahead and provide the passage.",,True,stop,5210866000,106712400,732,181513400,88,4830376200,null
+prompts/few-shot.txt,Mango is a fruit from a tree,llama3:8b,2025-12-29T01:33:37.8240974Z,"@prefix ex: <http://example.org/kg/> .
+@prefix schema: <http://schema.org/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:mango a schema:Fruit ;
+  rdfs:label ""Mango"" ;
+  schema:from ex:mango_tree .
+
+ex:mango_tree a schema:Tree ;
+  rdfs:label ""mango tree"" .",,True,stop,35411148100,23609260600,732,5443013300,94,6254293600,null
