@@ -126,7 +126,7 @@ class OllamaClient:
         if options_payload:
             payload["options"] = options_payload
 
-        response = requests.post(self.config.url, json=payload)
+        response = requests.post(f"{self.config.url}/api/generate", json=payload)
         response.raise_for_status()
         data = self._parse_response(response)
         self._log_to_csv(data, prompt_name=prompt_name, input_text=input_text)

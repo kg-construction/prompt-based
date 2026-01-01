@@ -64,7 +64,7 @@ def client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, ollama_mock):
     monkeypatch.setattr(prompt_repository.PromptRepository, "__init__", _init)
     monkeypatch.setenv("DEFAULT_PROMPT_NAME", "test_prompt.txt")
     monkeypatch.setenv("DEFAULT_SYSTEM_PROMPT_NAME", "system_prompt.txt")
-    monkeypatch.setenv("OLLAMA_API_URL", "http://localhost:11434/api/generate")
+    monkeypatch.setenv("OLLAMA_API_URL", "http://localhost:11434")
     monkeypatch.setenv("OLLAMA_MODEL", "llama3:8b")
 
     app = create_app()
@@ -112,7 +112,7 @@ def test_analyze_placeholder_is_replaced(ollama_mock, monkeypatch: pytest.Monkey
     monkeypatch.setattr(prompt_repository.PromptRepository, "__init__", _init)
     monkeypatch.setenv("DEFAULT_PROMPT_NAME", "test_prompt.txt")
     monkeypatch.setenv("DEFAULT_SYSTEM_PROMPT_NAME", "system_prompt.txt")
-    monkeypatch.setenv("OLLAMA_API_URL", "http://localhost:11434/api/generate")
+    monkeypatch.setenv("OLLAMA_API_URL", "http://localhost:11434")
     monkeypatch.setenv("OLLAMA_MODEL", "llama3:8b")
 
     app = create_app()
