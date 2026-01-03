@@ -1,0 +1,54 @@
+﻿@startuml
+actor User
+boundary ClientApp as Client
+
+box "Flask App" #EFEFEF
+  control "Analyze Controller" as Controller
+  control "KnowledgeGraphService" as Service
+  entity "PromptRepository" as Repo
+  control "OllamaClient" as OC
+end box
+
+collections "Prompt files\n(prompt/)" as PromptFiles
+database "CSV log\n(OLLAMA_CSV_PATH)" as CSV
+boundary "Ollama /api/generate" as OA
+
+User -> Client: Request analysis
+Client -> Controller ++: POST /analyze {text, prompt_name?, system_prompt_name?}
+note right of Controller
+payload example:
+{
+  "text": "Alice knows Bob.",
+  "prompt_name": "prompts/few-shot.txt",
+  "system_prompt_name": "system/knowledge_graph.txt"
+}
+end note
+Controller -> Controller: validate text present
+Controller -> Service ++: build AnalyzeRequest
+
+Service -> Repo ++: load system prompt (default or override)
+Repo -> PromptFiles: read system prompt file
+Repo --> Service --: system prompt text
+Service -> Repo ++: load prompt template (default or override)
+Repo -> PromptFiles: read prompt template file
+Repo --> Service --: prompt template text
+Service -> Service: build message (${USER_TEXT} replace or chat-style append)
+
+Service -> OC ++: generate(system, prompt, prompt_name, input_text)
+note right of OC
+POST to Ollama with:
+- model: OLLAMA_MODEL
+- url: OLLAMA_API_URL/api/generate
+- options: OLLAMA_* (seed, temperature, top_k, top_p, min_p, stop, num_ctx, num_predict)
+- stream: false
+end note
+OC -> OA ++: POST /api/generate {model, system, prompt, options, stream:false}
+OA --> OC --: JSON payload (response, timings, done_reason)
+
+OC -> CSV ++: append row (prompt_name, input_text, response, rdf flags)
+CSV --> OC --: logged
+OC --> Service --: generation payload
+Service --> Controller --: AnalyzeResponse.to_dict()
+Controller --> Client --: 200 {prompt metadata, message_for_model, generation}
+Client --> User: Show result
+@enduml
