@@ -1,12 +1,14 @@
-Prefixes:
+You are going to receive a Text, transform it to a knowledge graph using RDF syntax.
+
+Use the follow as prefixes:
 @prefix ex: <http://example.org/kg/> .
 @prefix schema: <http://schema.org/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-Few-shot examples:
+Some examples
 
-User: Alan Turing worked at Bletchley Park during World War II.
-Assistant:
+Text: Alan Turing worked at Bletchley Park during World War II.
+RDF:
 @prefix ex: <http://example.org/kg/> .
 @prefix schema: <http://schema.org/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -22,8 +24,8 @@ ex:bletchley_park a schema:Place ;
 ex:world_war_ii a schema:Event ;
   rdfs:label "World War II" .
 
-User: A research lab released a multimodal AI model in 2024, focusing on multimodal reasoning.
-Assistant:
+Text: A research lab released a multimodal AI model in 2024, focusing on multimodal reasoning.
+RDF:
 @prefix ex: <http://example.org/kg/> .
 @prefix schema: <http://schema.org/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -40,8 +42,8 @@ ex:multimodal_model a schema:SoftwareApplication ;
 ex:multimodal_reasoning a schema:Intangible ;
   rdfs:label "multimodal reasoning" .
 
-User: Marie Curie discovered radium with Pierre Curie in Paris.
-Assistant:
+Text: Marie Curie discovered radium with Pierre Curie in Paris.
+RDF:
 @prefix ex: <http://example.org/kg/> .
 @prefix schema: <http://schema.org/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -64,5 +66,5 @@ ex:radium a schema:ChemicalSubstance ;
 ex:paris a schema:Place ;
   rdfs:label "Paris" .
 
-User: ${USER_TEXT}
-Assistant:
+Text: ${Text_TEXT}
+RDF:
