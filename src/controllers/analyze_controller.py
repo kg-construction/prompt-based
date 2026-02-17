@@ -39,6 +39,10 @@ def create_analyze_blueprint(service: KnowledgeGraphService) -> Blueprint:
         except ValueError as exc:
             return jsonify({"error": str(exc)}), 400
 
-        return jsonify(response.to_dict()), 200
+        rdf_output = None
+        if response.generation and isinstance(response.generation, dict):
+            rdf_output = response.generation.get("response")
+
+        return jsonify({"text": response.input_text, "rdf": rdf_output}), 200
 
     return blueprint

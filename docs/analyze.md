@@ -14,11 +14,7 @@
   - Example response (shape):
     ```json
     {
-      "prompt_name": "prompts/few-shot.txt",
-      "system_prompt_name": "system/knowledge_graph.txt",
-      "prompt": "...prompt template text...",
-      "input_text": "Alice knows Bob.",
-      "message_for_model": "...assembled message...",
-      "generation": { "model": "llama3:8b", "response": "...", ... }
+      "text": "Alice knows Bob.",
+      "rdf": "rdf.."
     }
     ```

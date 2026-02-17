@@ -71,10 +71,8 @@ def test_analyze_happy_path(client):
 
     assert resp.status_code == 200
     data = resp.get_json()
-    assert data["prompt_name"] == "test_prompt.txt"
-    assert data["prompt"] == "Prompt content"
-    assert data["input_text"] == "Some text"
-    assert "User: Some text" in data["message_for_model"]
+    assert data["text"] == "Some text"
+    assert data["rdf"] is None
 
 
 def test_analyze_missing_text_returns_400(client):
@@ -110,7 +108,8 @@ def test_analyze_replaces_placeholder(client):
         resp = local_client.post("/analyze", data=json.dumps(payload), content_type="application/json")
 
         assert resp.status_code == 200
-        assert resp.get_json()["message_for_model"] == "Placeholder: abc"
+        assert resp.get_json()["text"] == "abc"
+        assert resp.get_json()["rdf"] is None
 
 
 def test_analyze_includes_generation_payload():
@@ -135,5 +134,6 @@ def test_analyze_includes_generation_payload():
 
         assert resp.status_code == 200
         data = resp.get_json()
-        assert data["generation"]["response"] == "ok"
+        assert data["text"] == "Some text"
+        assert data["rdf"] == "ok"
         assert ollama.calls[0]["system"] == "System prompt content"

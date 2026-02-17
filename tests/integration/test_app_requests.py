@@ -81,11 +81,8 @@ def test_analyze_request_flow(client):
 
     assert resp.status_code == 200
     data = resp.get_json()
-    assert data["prompt_name"] == "test_prompt.txt"
-    assert data["prompt"] == "Prompt content"
-    assert data["input_text"] == "Integration text"
-    assert "User: Integration text" in data["message_for_model"]
-    assert data["generation"]["response"] == "Generated KG"
+    assert data["text"] == "Integration text"
+    assert data["rdf"] == "Generated KG"
 
     assert "Integration text" in capture["payload"]["prompt"]
 
@@ -122,4 +119,5 @@ def test_analyze_placeholder_is_replaced(ollama_mock, monkeypatch: pytest.Monkey
         resp = client2.post("/analyze", data=json.dumps(payload), content_type="application/json")
 
         assert resp.status_code == 200
-        assert resp.get_json()["message_for_model"] == "Placeholder XYZ"
+        assert resp.get_json()["text"] == "XYZ"
+        assert resp.get_json()["rdf"] == "Generated KG"
